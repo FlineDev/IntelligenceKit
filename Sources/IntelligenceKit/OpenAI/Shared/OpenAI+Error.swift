@@ -14,33 +14,33 @@ extension OpenAI {
       public var userFriendlyMessage: String {
          switch self {
          case .emptyResponse:
-            String(
-               localized: "OpenAI.Error.emptyResponse",
+            String.localized(
+               key: "OpenAI.Error.emptyResponse",
                defaultValue: "OpenAI returned an empty response"
             )
          case .contentFilterApplied:
-            String(
-               localized: "OpenAI.Error.contentFilterApplied",
+            String.localized(
+               key: "OpenAI.Error.contentFilterApplied",
                defaultValue: "Content was filtered by OpenAI's safety system"
             )
          case .maxLengthExceeded:
-            String(
-               localized: "OpenAI.Error.maxLengthExceeded",
+            String.localized(
+               key: "OpenAI.Error.maxLengthExceeded",
                defaultValue: "Response exceeded maximum length limit"
             )
          case .unexpectedMessageRole:
-            String(
-               localized: "OpenAI.Error.unexpectedMessageRole",
+            String.localized(
+               key: "OpenAI.Error.unexpectedMessageRole",
                defaultValue: "Received unexpected message role in response"
             )
          case .jsonSchemaDecodingError(let error):
-            String(
-               localized: "OpenAI.Error.jsonSchemaDecodingError",
+            String.localized(
+               key: "OpenAI.Error.jsonSchemaDecodingError",
                defaultValue: "Failed to decode structured response: \(error.localizedDescription)"
             )
          case .requestError(let error):
-            String(
-               localized: "OpenAI.Error.requestError",
+            String.localized(
+               key: "OpenAI.Error.requestError", 
                defaultValue: "Network request failed: \(error.errorDescription ?? "Unknown error")"
             )
          }

@@ -1,6 +1,10 @@
 import Foundation
 import HandySwift
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 /// OpenAI API client for the modern Responses API with GPT-5 support.
 /// Provides a clean, type-safe interface for interacting with OpenAI's language models
 /// including advanced reasoning capabilities and conversation continuity.
