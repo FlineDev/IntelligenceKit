@@ -1,0 +1,42 @@
+{
+  "originHash" : "12d5aff75530f967f0da3814c5cb1c94047eb1f3d838ed9831dadc7fc07059b3",
+  "pins" : [
+    {
+      "identity" : "errorkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/FlineDev/ErrorKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c9c2fe82fb46a67dd15283827d8e14c3549f5c07"
+      }
+    },
+    {
+      "identity" : "handyswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/FlineDev/HandySwift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ff1ffe9f8b14298637b7f463eb10cc072091ed77"
+      }
+    },
+    {
+      "identity" : "swift-asn1",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-asn1.git",
+      "state" : {
+        "revision" : "f70225981241859eb4aa1a18a75531d26637c8cc",
+        "version" : "1.4.0"
+      }
+    },
+    {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto.git",
+      "state" : {
+        "revision" : "334e682869394ee239a57dbe9262bff3cd9495bd",
+        "version" : "3.14.0"
+      }
+    }
+  ],
+  "version" : 3
+}
