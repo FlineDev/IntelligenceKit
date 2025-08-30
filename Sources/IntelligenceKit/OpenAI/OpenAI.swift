@@ -43,6 +43,7 @@ public final class OpenAI: Sendable {
          baseHeaders: ["Authorization": "Bearer \(apiKey)", "Content-Type": "application/json"],
          jsonDecoder: .snakeCase,
          urlSession: urlSession,
+         responsePlugins: [UnicodeCleanupPlugin()],
          baseErrorContext: "OpenAI",
          errorBodyToMessage: { try JSONDecoder.snakeCase.decode(ErrorResponse.self, from: $0).error.message }
       )
