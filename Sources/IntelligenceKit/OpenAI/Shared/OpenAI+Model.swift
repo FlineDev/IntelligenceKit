@@ -12,12 +12,12 @@ extension OpenAI {
    /// ```swift
    /// // Use GPT-5 with high reasoning for complex problems
    /// let model = OpenAI.Model.gpt5(reasoning: .high)
-   /// 
+   ///
    /// // Use GPT-5-mini with minimal reasoning for simple tasks
    /// let fastModel = OpenAI.Model.gpt5Mini(reasoning: .minimal)
    /// ```
    public enum Model: Sendable, Equatable {
-      
+
       // MARK: - Legacy Models
       case gpt41
       case gpt41Mini
@@ -59,7 +59,7 @@ extension OpenAI {
       /// ```swift
       /// let gpt5Model = OpenAI.Model.gpt5(reasoning: .high)
       /// print(gpt5Model.reasoning) // Optional(.high)
-      /// 
+      ///
       /// let legacyModel = OpenAI.Model.gpt41
       /// print(legacyModel.reasoning) // nil
       /// ```
@@ -82,7 +82,7 @@ extension OpenAI {
       /// ```swift
       /// let model = OpenAI.Model.gpt5(reasoning: .medium)
       /// print(model.contextWindowTokens) // 400_000
-      /// 
+      ///
       /// // Check if your input fits
       /// if myInputTokenCount < model.contextWindowTokens {
       ///     // Safe to proceed
@@ -110,7 +110,7 @@ extension OpenAI {
       /// ```swift
       /// let model = OpenAI.Model.gpt5Mini(reasoning: .low)
       /// print(model.maxOutputTokens) // 128_000
-      /// 
+      ///
       /// // You can expect responses up to this many tokens
       /// ```
       ///
@@ -187,7 +187,7 @@ extension OpenAI {
       /// ```swift
       /// let gpt5 = OpenAI.Model.gpt5(reasoning: .high)
       /// print(gpt5.displayName) // "gpt-5 (high)"
-      /// 
+      ///
       /// let legacy = OpenAI.Model.gpt41
       /// print(legacy.displayName) // "gpt-4.1"
       /// ```
@@ -210,7 +210,7 @@ extension OpenAI {
       /// ```swift
       /// let legacy = OpenAI.Model.gpt41
       /// print(legacy.supportsTemperature) // true
-      /// 
+      ///
       /// let gpt5 = OpenAI.Model.gpt5(reasoning: .medium)
       /// print(gpt5.supportsTemperature) // false
       /// ```

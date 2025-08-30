@@ -2,12 +2,12 @@ import Foundation
 import HandySwift
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+   import FoundationNetworking
 #endif
 
 extension OpenAI {
    /// Response plugin that cleans up NULL characters from OpenAI API responses.
-   /// 
+   ///
    /// This addresses a known issue where the OpenAI Responses API sometimes returns NULL characters
    /// in place of Unicode characters, particularly affecting non-English languages with accented characters.
    /// The plugin automatically removes these NULL characters from response data before JSON parsing.

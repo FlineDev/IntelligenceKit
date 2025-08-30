@@ -2,7 +2,7 @@ import Foundation
 import HandySwift
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+   import FoundationNetworking
 #endif
 
 /// OpenAI API client for the modern Responses API with GPT-5 support.
@@ -21,14 +21,14 @@ public final class OpenAI: Sendable {
    let restClient: RESTClient
 
    /// Initialize the OpenAI client with your API key.
-   /// 
+   ///
    /// Get your API key from the OpenAI Platform at https://platform.openai.com/api-keys
    /// Make sure your key has sufficient credits and access to the models you plan to use.
    ///
    /// Example:
    /// ```swift
    /// let openAI = OpenAI(apiKey: "sk-...")
-   /// 
+   ///
    /// // With custom URL session for advanced networking
    /// let customSession = URLSession(configuration: .default)
    /// let openAI = OpenAI(apiKey: "sk-...", urlSession: customSession)
@@ -59,14 +59,14 @@ public final class OpenAI: Sendable {
    /// Example:
    /// ```swift
    /// let openAI = OpenAI(apiKey: "your-api-key")
-   /// 
+   ///
    /// // Simple question with GPT-5-mini
    /// let response = try await openAI.ask(
    ///     model: .gpt5Mini(reasoning: .medium),
    ///     input: "Explain Swift's type system"
    /// )
    /// print(response.outputText)
-   /// 
+   ///
    /// // Complex task with detailed instructions
    /// let response = try await openAI.ask(
    ///     model: .gpt5(reasoning: .high),
@@ -74,7 +74,7 @@ public final class OpenAI: Sendable {
    ///     instructions: "You are an expert software engineer. Provide detailed explanations.",
    ///     verbosity: .high
    /// )
-   /// 
+   ///
    /// // Continue a conversation
    /// let followUp = try await openAI.ask(
    ///     model: .gpt5Mini(reasoning: .low),

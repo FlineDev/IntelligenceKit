@@ -40,7 +40,7 @@ extension OpenAI {
             )
          case .requestError(let error):
             String.localized(
-               key: "OpenAI.Error.requestError", 
+               key: "OpenAI.Error.requestError",
                defaultValue: "Network request failed: \(error.errorDescription ?? "Unknown error")"
             )
          }

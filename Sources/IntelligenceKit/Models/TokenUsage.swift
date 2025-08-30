@@ -7,7 +7,7 @@ import Foundation
 /// Example:
 /// ```swift
 /// let usage = TokenUsage(inputTokens: 100, outputTokens: 50, totalTokens: 150)
-/// 
+///
 /// // Calculate costs using model pricing
 /// let model = OpenAI.Model.gpt5Mini(reasoning: .medium)
 /// let inputCost = Double(usage.inputTokens) / 1_000_000 * model.inputUSDPerMillionTokens
@@ -18,7 +18,7 @@ public struct TokenUsage: Codable {
    public let inputTokens: Int
    public let outputTokens: Int
    public let totalTokens: Int
-   
+
    /// Initialize a new TokenUsage instance.
    ///
    /// - Parameters:

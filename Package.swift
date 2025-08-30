@@ -16,6 +16,10 @@ let package = Package(
             .product(name: "HandySwift", package: "HandySwift"),
             .product(name: "ErrorKit", package: "ErrorKit"),
          ]
+      ),
+      .testTarget(
+         name: "IntelligenceKitTests",
+         dependencies: ["IntelligenceKit"]
       )
    ]
 )

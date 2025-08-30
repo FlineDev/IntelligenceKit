@@ -13,10 +13,10 @@ extension OpenAI {
    /// ```swift
    /// // Quick responses for simple tasks
    /// let fastModel = OpenAI.Model.gpt5Mini(reasoning: .minimal)
-   /// 
+   ///
    /// // Balanced approach for most use cases
    /// let balancedModel = OpenAI.Model.gpt5Mini(reasoning: .medium)
-   /// 
+   ///
    /// // Deep reasoning for complex problems
    /// let thoughtfulModel = OpenAI.Model.gpt5(reasoning: .high)
    /// ```
@@ -39,7 +39,7 @@ extension OpenAI {
    ///     input: "Explain machine learning",
    ///     verbosity: .low
    /// )
-   /// 
+   ///
    /// // Detailed explanation with examples
    /// let response = try await openAI.ask(
    ///     model: .gpt5(reasoning: .medium),
@@ -63,7 +63,7 @@ extension OpenAI {
    ///     input: "Process this quickly",
    ///     serviceTier: .auto
    /// )
-   /// 
+   ///
    /// // High priority for time-sensitive requests
    /// let urgentResponse = try await openAI.ask(
    ///     model: .gpt5(reasoning: .low),
@@ -74,8 +74,8 @@ extension OpenAI {
    public enum ServiceTier: String, Encodable, Sendable {
       case auto
       case `default`
-      case flex        // Variable processing times, potentially lower costs
-      case priority    // Fastest processing, higher costs
+      case flex  // Variable processing times, potentially lower costs
+      case priority  // Fastest processing, higher costs
    }
 
    struct Request: Encodable, Sendable {

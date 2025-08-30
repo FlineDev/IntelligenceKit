@@ -12,16 +12,16 @@ extension OpenAI {
    ///     model: .gpt5Mini(reasoning: .medium),
    ///     input: "Hello, world!"
    /// )
-   /// 
+   ///
    /// // Get the generated text
    /// print(response.outputText)
-   /// 
+   ///
    /// // Check token usage for cost calculation
    /// print("Used \(response.usage.totalTokens) tokens")
    /// print("Cost: $\((response.usage.totalTokens * model.inputUSDPerMillionTokens) / 1_000_000)")
    /// ```
    public struct Response: AutoConforming {
-      
+
       /// Token usage information for the API request.
       /// Contains detailed breakdown of input, output, and total token consumption
       /// which is essential for cost tracking and optimization.
@@ -31,7 +31,7 @@ extension OpenAI {
          public let totalTokens: Int
 
          /// Converts the usage data to a TokenUsage object for compatibility with other APIs.
-         /// 
+         ///
          /// Example:
          /// ```swift
          /// let tokenUsage = response.usage.tokenUsage
@@ -46,7 +46,7 @@ extension OpenAI {
       /// The Responses API can return multiple output items including the main message
       /// and reasoning traces (for GPT-5 models with reasoning enabled).
       public struct OutputItem: AutoConforming {
-         
+
          public enum `Type`: String, AutoConforming {
             case message
             case reasoning
@@ -70,13 +70,13 @@ extension OpenAI {
       /// Unique identifier for this response, useful for conversation continuity.
       /// Pass this ID as previousResponseID in subsequent requests to maintain context.
       public let id: String
-      
+
       /// Object type identifier from the API (typically "response").
       public let object: String
-      
+
       /// Token usage information for cost calculation and monitoring.
       public let usage: Usage
-      
+
       /// Array of output items containing the response content and any reasoning traces.
       public let output: [OutputItem]
 
@@ -126,7 +126,7 @@ extension OpenAI.Response {
    ///     let name: String
    ///     let age: Int
    /// }
-   /// 
+   ///
    /// let response = try await openAI.ask(
    ///     model: .gpt5Mini(reasoning: .medium),
    ///     input: "Generate a person",
