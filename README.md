@@ -56,8 +56,8 @@ print(detailedText)
 // Reasoning effort levels (specified in model)
 .gpt5Mini(reasoning: .minimal)  // Fastest, fewer reasoning tokens
 .gpt5Mini(reasoning: .low)      // Balanced speed and reasoning
-.gpt5Mini(reasoning: .medium)   // Default, good balance
-.gpt5Mini(reasoning: .high)     // Most thorough reasoning
+.gpt5Mini(reasoning: .medium)   // Good balance for mini model
+.gpt5(reasoning: .high)         // Most thorough reasoning (full model only)
 
 // Text verbosity levels (as parameter)
 verbosity: .low      // Concise responses
