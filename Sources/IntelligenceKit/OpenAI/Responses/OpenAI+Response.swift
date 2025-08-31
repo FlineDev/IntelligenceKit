@@ -80,20 +80,6 @@ extension OpenAI {
       /// Array of output items containing the response content and any reasoning traces.
       public let output: [OutputItem]
 
-      /// Convenience property to get the main response text directly.
-      /// Extracts the text from the first message-type output item, which is typically
-      /// what you want to display to users.
-      ///
-      /// Example:
-      /// ```swift
-      /// let response = try await openAI.ask(model: .gpt5Mini(reasoning: .medium), input: "Hello!")
-      /// print(response.outputText) // "Hello! How can I help you today?"
-      /// ```
-      ///
-      /// - Returns: The generated text, or empty string if no message content is found.
-      public var outputText: String {
-         self.output.first { $0.type == .message }?.content?.first?.text ?? ""
-      }
    }
 }
 

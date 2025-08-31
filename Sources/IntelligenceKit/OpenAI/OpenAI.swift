@@ -16,6 +16,8 @@ import HandySwift
 ///     model: .gpt5Mini(reasoning: .medium),
 ///     input: "Hello, world!"
 /// )
+/// let message = try response.textMessage()
+/// print(message)
 /// ```
 public final class OpenAI: Sendable {
    let restClient: RESTClient
@@ -65,22 +67,25 @@ public final class OpenAI: Sendable {
    ///     model: .gpt5Mini(reasoning: .medium),
    ///     input: "Explain Swift's type system"
    /// )
-   /// print(response.outputText)
+   /// let message = try response.textMessage()
+   /// print(message)
    ///
    /// // Complex task with detailed instructions
-   /// let response = try await openAI.ask(
+   /// let detailedResponse = try await openAI.ask(
    ///     model: .gpt5(reasoning: .high),
    ///     input: "Optimize this algorithm for performance",
    ///     instructions: "You are an expert software engineer. Provide detailed explanations.",
    ///     verbosity: .high
    /// )
+   /// let detailedAnswer = try detailedResponse.textMessage()
    ///
    /// // Continue a conversation
    /// let followUp = try await openAI.ask(
    ///     model: .gpt5Mini(reasoning: .low),
    ///     input: "Can you simplify that explanation?",
-   ///     previousResponseID: response.id
+   ///     previousResponseID: detailedResponse.id
    /// )
+   /// let followUpAnswer = try followUp.textMessage()
    /// ```
    ///
    /// - Parameters:

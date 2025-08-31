@@ -24,38 +24,42 @@ Unified Swift package for OpenAI API integration with GPT-5 support and advanced
 
 ## Usage
 
-### Basic Usage with GPT-5
+### Basic Text Generation
 ```swift
 import IntelligenceKit
 
 let openAI = OpenAI(apiKey: "your-key")
 
-// Simple text generation with GPT-5-mini
+// Simple text generation with GPT-5-mini (medium reasoning by default)
 let response = try await openAI.ask(
-    model: .gpt5Mini,
+    model: .gpt5Mini(reasoning: .medium),
     input: "Write a haiku about coding"
 )
-print(response.outputText)
+
+// Get the response text with proper error handling
+let text = try response.textMessage()
+print(text)
 
 // Advanced reasoning with specific effort level
-let response = try await openAI.ask(
-    model: .gpt5,
+let response2 = try await openAI.ask(
+    model: .gpt5(reasoning: .high),
     instructions: "You are a helpful coding assistant",
     input: "Explain the benefits of Swift's type system",
-    reasoning: .high,
     verbosity: .high
 )
+let detailedText = try response2.textMessage()
+print(detailedText)
 ```
 
 ### Reasoning and Verbosity Options
 ```swift
-// Reasoning effort levels
-reasoning: .minimal  // Fastest, fewer reasoning tokens
-reasoning: .low      // Balanced speed and reasoning
-reasoning: .medium   // Default, good balance
-reasoning: .high     // Most thorough reasoning
+// Reasoning effort levels (specified in model)
+.gpt5Mini(reasoning: .minimal)  // Fastest, fewer reasoning tokens
+.gpt5Mini(reasoning: .low)      // Balanced speed and reasoning
+.gpt5Mini(reasoning: .medium)   // Default, good balance
+.gpt5Mini(reasoning: .high)     // Most thorough reasoning
 
-// Text verbosity levels  
+// Text verbosity levels (as parameter)
 verbosity: .low      // Concise responses
 verbosity: .medium   // Default length
 verbosity: .high     // Detailed explanations
@@ -65,16 +69,68 @@ verbosity: .high     // Detailed explanations
 ```swift
 // First message
 let response1 = try await openAI.ask(
-    model: .gpt5Mini,
+    model: .gpt5Mini(reasoning: .medium),
     input: "What is Swift?"
 )
+let firstAnswer = try response1.textMessage()
 
 // Continue conversation (automatic context)
 let response2 = try await openAI.ask(
-    model: .gpt5Mini,
+    model: .gpt5Mini(reasoning: .low),
     input: "How does it compare to Objective-C?",
     previousResponseID: response1.id
 )
+let followUpAnswer = try response2.textMessage()
+```
+
+### Structured JSON Output
+```swift
+// Define your data structure
+struct Person: Codable {
+    let name: String
+    let age: Int
+    let occupation: String
+}
+
+// Create JSON schema for structured output
+let responseFormat = OpenAI.ResponseFormat(
+    name: "PersonInfo",
+    description: "Generate person information",
+    schema: .object(
+        properties: [
+            "name": .string(description: "Person's full name"),
+            "age": .integer(description: "Person's age in years"),
+            "occupation": .string(description: "Person's job title")
+        ]
+    )
+)
+
+// Request structured JSON response
+let response = try await openAI.ask(
+    model: .gpt5Mini(reasoning: .low),
+    input: "Generate a random person with a creative occupation",
+    responseFormat: responseFormat
+)
+
+// Decode JSON directly into your type
+let person = try response.jsonMessage(decodedTo: Person.self)
+print("\(person.name) is \(person.age) years old and works as a \(person.occupation)")
+```
+
+### Image Generation with DALL-E
+```swift
+// Generate an image with DALL-E 3
+let imageRequest = OpenAI.ImageRequest(
+    prompt: "A serene Japanese garden with cherry blossoms at sunset",
+    model: .dallE3,
+    quality: .hd,
+    style: .natural
+)
+
+let imageResponse = try await openAI.createImage(request: imageRequest)
+if let imageURL = imageResponse.data.first?.url {
+    print("Generated image: \(imageURL)")
+}
 ```
 
 ## Dependencies
@@ -84,14 +140,47 @@ let response2 = try await openAI.ask(
 
 ## Error Handling
 
-All errors conform to ErrorKit's `Throwable` protocol with localized user-friendly messages:
+All functions use typed throws (`throws(OpenAI.Error)`) for better error handling. Errors conform to ErrorKit's `Throwable` protocol with localized user-friendly messages:
 
 ```swift
 do {
-    let response = try await openAI.chatCompletion(...)
-} catch let error as OpenAI.Error {
-    print(error.userFriendlyMessage) // Localized error message
+    let response = try await openAI.ask(
+        model: .gpt5Mini(reasoning: .medium),
+        input: "Hello!"
+    )
+    let message = try response.textMessage()  // Throws if no content
+    print(message)
+} catch {
+    print(error.userFriendlyMessage)  // Localized error message
+    switch error {
+    case .emptyResponse:
+        print("No response content received")
+    case .jsonSchemaDecodingError(let decodingError):
+        print("Failed to decode JSON: \(decodingError)")
+    case .requestError(let underlyingError):
+        print("Request failed: \(underlyingError)")
+    }
 }
+```
+
+## Token Usage and Cost Tracking
+
+```swift
+let response = try await openAI.ask(
+    model: .gpt5Mini(reasoning: .medium),
+    input: "Explain quantum computing"
+)
+
+// Access token usage information
+let usage = response.usage
+print("Input tokens: \(usage.inputTokens)")
+print("Output tokens: \(usage.outputTokens)")
+print("Total tokens: \(usage.totalTokens)")
+
+// Calculate approximate cost (prices are examples)
+let inputCost = Double(usage.inputTokens) * 0.15 / 1_000_000  // $0.15 per million
+let outputCost = Double(usage.outputTokens) * 0.60 / 1_000_000  // $0.60 per million
+print("Estimated cost: $\(String(format: "%.4f", inputCost + outputCost))")
 ```
 
 ## Cross-Platform Notes
