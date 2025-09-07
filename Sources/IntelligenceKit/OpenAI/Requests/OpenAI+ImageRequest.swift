@@ -5,17 +5,34 @@ extension OpenAI {
    /// Request configuration for DALL⋅E image generation.
    public struct ImageRequest: Encodable, Sendable {
       /// The model to use for image generation.
-      public enum Model: String, Encodable, CaseIterable, Identifiable, Hashable, Sendable, CustomStringConvertible {
+      public enum Model: Encodable, Identifiable, Hashable, Sendable, CustomStringConvertible {
          /// DALL⋅E 2 model for image generation.
-         case dallE2 = "dall-e-2"
+         case dallE2
          /// DALL⋅E 3 model for image generation with improved quality and understanding.
-         case dallE3 = "dall-e-3"
+         case dallE3(quality: Quality, style: Style)
 
-         public var id: Self { self }
+         public var id: String {
+            switch self {
+            case .dallE2: "dall-e-2"
+            case .dallE3: "dall-e-3"
+            }
+         }
+         
          public var description: String {
             switch self {
             case .dallE2: "DALL⋅E 2"
             case .dallE3: "DALL⋅E 3"
+            }
+         }
+         
+         // Custom encoding to handle the model name and associated values
+         public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            switch self {
+            case .dallE2:
+               try container.encode("dall-e-2")
+            case .dallE3:
+               try container.encode("dall-e-3")
             }
          }
       }
@@ -53,23 +70,34 @@ extension OpenAI {
       /// The model to use for image generation.
       public let model: Model
 
-      /// The quality of the image that will be generated. hd creates images with finer details and greater consistency across the image. This param is only supported for dall-e-3.
-      public let quality: Quality
-
-      /// The style of the generated images. Must be one of vivid or natural. Vivid causes the model to lean towards generating hyper-real and dramatic images. Natural causes the model to produce more natural, less hyper-real looking images. This param is only supported for dall-e-3.
-      public let style: Style
 
       /// Creates a new image generation request.
       /// - Parameters:
       ///   - prompt: A text description of the desired image(s). Maximum 1000 characters for DALL⋅E 2, 4000 for DALL⋅E 3.
       ///   - model: The model to use for image generation.
-      ///   - quality: The quality of the image (only supported for DALL⋅E 3).
-      ///   - style: The style of the generated images (only supported for DALL⋅E 3).
-      public init(prompt: String, model: Model, quality: Quality, style: Style) {
+      public init(prompt: String, model: Model) {
          self.prompt = prompt
          self.model = model
-         self.quality = quality
-         self.style = style
+      }
+      
+      // Custom encoding to handle model-specific parameters
+      public func encode(to encoder: Encoder) throws {
+         var container = encoder.container(keyedBy: CodingKeys.self)
+         try container.encode(prompt, forKey: .prompt)
+         try container.encode(model, forKey: .model)
+         
+         // Only encode quality and style for DALL-E 3
+         if case let .dallE3(quality, style) = model {
+            try container.encode(quality, forKey: .quality)
+            try container.encode(style, forKey: .style)
+         }
+      }
+      
+      private enum CodingKeys: String, CodingKey {
+         case prompt
+         case model
+         case quality
+         case style
       }
    }
 }
