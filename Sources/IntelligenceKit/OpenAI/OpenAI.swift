@@ -16,8 +16,6 @@ import HandySwift
 ///     model: .gpt5Mini(reasoning: .medium),
 ///     input: "Hello, world!"
 /// )
-/// let message = try response.textMessage()
-/// print(message)
 /// ```
 public final class OpenAI: Sendable {
    let restClient: RESTClient
@@ -67,25 +65,22 @@ public final class OpenAI: Sendable {
    ///     model: .gpt5Mini(reasoning: .medium),
    ///     input: "Explain Swift's type system"
    /// )
-   /// let message = try response.textMessage()
-   /// print(message)
+   /// print(response.outputText)
    ///
    /// // Complex task with detailed instructions
-   /// let detailedResponse = try await openAI.ask(
+   /// let response = try await openAI.ask(
    ///     model: .gpt5(reasoning: .high),
    ///     input: "Optimize this algorithm for performance",
    ///     instructions: "You are an expert software engineer. Provide detailed explanations.",
    ///     verbosity: .high
    /// )
-   /// let detailedAnswer = try detailedResponse.textMessage()
    ///
    /// // Continue a conversation
    /// let followUp = try await openAI.ask(
    ///     model: .gpt5Mini(reasoning: .low),
    ///     input: "Can you simplify that explanation?",
-   ///     previousResponseID: detailedResponse.id
+   ///     previousResponseID: response.id
    /// )
-   /// let followUpAnswer = try followUp.textMessage()
    /// ```
    ///
    /// - Parameters:
@@ -133,17 +128,32 @@ public final class OpenAI: Sendable {
       }
    }
 
-   /// Generate or edit images using GPT-Image 1 model.
-   /// Automatically selects between generation and edit endpoints based on the request parameters.
+   /// Generate images using GPT-Image 1.
    /// - Parameters:
-   ///   - request: Image generation or edit request with prompt, model, and optional image/mask data
-   /// - Returns: Response containing URLs to generated or edited images
+   ///   - request: Image generation request with prompt, model, quality, and style parameters
+   /// - Returns: Response containing URLs to generated images
    /// - Throws: OpenAI.Error for various failure cases
    public func createImage(request: ImageRequest) async throws(OpenAI.Error) -> ImageResponse {
       do {
-         // Determine endpoint based on request type
-         let endpoint = request.image != nil ? "v1/images/edits" : "v1/images/generations"
-         return try await self.restClient.fetchAndDecode(method: .post, path: endpoint, body: .json(request))
+         // GPT-Image 1 uses multipart/form-data format
+         var multipartItems: [RESTClient.MultipartItem] = [
+            .init(name: "model", value: .text(request.model.rawValue)),
+            .init(name: "prompt", value: .text(request.prompt)),
+            .init(name: "quality", value: .text(request.quality.rawValue)),
+            .init(name: "size", value: .text(request.size.rawValue)),
+         ]
+
+         // Add image data if provided (for image-to-image operations)
+         if let imageBase64 = request.image, let imageData = Data(base64Encoded: imageBase64) {
+            multipartItems.append(.init(name: "image", value: .data(imageData, fileName: "image.png", mimeType: "image/png")))
+         }
+
+         // Add mask data if provided (for inpainting operations)
+         if let maskBase64 = request.mask, let maskData = Data(base64Encoded: maskBase64) {
+            multipartItems.append(.init(name: "mask", value: .data(maskData, fileName: "mask.png", mimeType: "image/png")))
+         }
+
+         return try await self.restClient.fetchAndDecode(method: .post, path: "v1/images/generations", body: .multipart(multipartItems))
       } catch {
          throw .requestError(error)
       }
