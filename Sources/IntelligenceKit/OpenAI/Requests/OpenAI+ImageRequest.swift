@@ -2,26 +2,22 @@ import Foundation
 import HandySwift
 
 extension OpenAI {
-   /// Request configuration for DALL⋅E image generation.
+   /// Request configuration for GPT-Image 1 image generation and editing.
    public struct ImageRequest: Encodable, Sendable {
       /// The model to use for image generation.
       public enum Model: Encodable, Identifiable, Hashable, Sendable, CustomStringConvertible {
-         /// DALL⋅E 2 model for image generation.
-         case dallE2(size: DallE2Size)
-         /// DALL⋅E 3 model for image generation with improved quality and understanding.
-         case dallE3(size: DallE3Size, quality: Quality, style: Style)
+         /// GPT-Image 1 model for advanced image generation and editing with transparent background support.
+         case gptImage1(size: Size, quality: Quality, background: Background)
 
          public var id: String {
             switch self {
-            case .dallE2: "dall-e-2"
-            case .dallE3: "dall-e-3"
+            case .gptImage1: "gpt-image-1"
             }
          }
 
          public var description: String {
             switch self {
-            case .dallE2: "DALL⋅E 2"
-            case .dallE3: "DALL⋅E 3"
+            case .gptImage1: "GPT-Image 1"
             }
          }
 
@@ -29,74 +25,94 @@ extension OpenAI {
          public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
             switch self {
-            case .dallE2:
-               try container.encode("dall-e-2")
-            case .dallE3:
-               try container.encode("dall-e-3")
+            case .gptImage1:
+               try container.encode("gpt-image-1")
             }
          }
       }
 
-      /// Image sizes supported by DALL⋅E 2.
-      public enum DallE2Size: String, Encodable, CaseIterable, Identifiable, Hashable, Sendable, CustomStringConvertible {
-         case square256 = "256x256"
-         case square512 = "512x512"
-         case square1024 = "1024x1024"
-
-         public var id: Self { self }
-         public var description: String { self.rawValue }
-      }
-
-      /// Image sizes supported by DALL⋅E 3.
-      public enum DallE3Size: String, Encodable, CaseIterable, Identifiable, Hashable, Sendable, CustomStringConvertible {
-         case square1024 = "1024x1024"
-         case landscape7x4H1024 = "1792x1024"  // 7:4 aspect ratio, 1024px height
-         case portrait4x7W1024 = "1024x1792"  // 4:7 aspect ratio, 1024px width
-
-         public var id: Self { self }
-         public var description: String { self.rawValue }
-      }
-
-      /// The quality of the generated image. Only supported for DALL⋅E 3.
-      public enum Quality: String, Encodable, CaseIterable, Identifiable, Hashable, Sendable, CustomStringConvertible {
-         /// High-definition quality with finer details and greater consistency across the image.
-         case hd
-         /// Standard quality image generation.
-         case standard
+      /// Image sizes supported by GPT-Image 1.
+      public enum Size: String, Encodable, CaseIterable, Identifiable, Hashable, Sendable, CustomStringConvertible {
+         case square1024 = "1024x1024"  // Square format, ideal for icons and logos
+         case landscape1024x1536 = "1024x1536"  // Landscape format
+         case portrait1536x1024 = "1536x1024"  // Portrait format
+         case auto = "auto"  // Let the model choose the best size
 
          public var id: Self { self }
          public var description: String {
             switch self {
-            case .hd: "HD"
-            case .standard: "Standard"
+            case .square1024: "1024×1024 (Square)"
+            case .landscape1024x1536: "1024×1536 (Landscape)"
+            case .portrait1536x1024: "1536×1024 (Portrait)"
+            case .auto: "Auto (Model chooses)"
             }
          }
       }
 
-      /// The style of the generated images. Only supported for DALL⋅E 3.
-      public enum Style: String, Encodable, CaseIterable, Identifiable, Hashable, Sendable, CustomStringConvertible {
-         /// Vivid style causes the model to lean towards generating hyper-real and dramatic images.
-         case vivid
-         /// Natural style causes the model to produce more natural, less hyper-real looking images.
-         case natural
+      /// The quality of the generated image. Supported for GPT-Image 1.
+      public enum Quality: String, Encodable, CaseIterable, Identifiable, Hashable, Sendable, CustomStringConvertible {
+         /// High quality image generation with finer details.
+         case high
+         /// Medium quality image generation (balanced speed and quality).
+         case medium
+         /// Low quality image generation (faster generation).
+         case low
+         /// Automatic quality selection by the model.
+         case auto
 
          public var id: Self { self }
-         public var description: String { self.rawValue.firstUppercased }
+         public var description: String {
+            switch self {
+            case .high: "High"
+            case .medium: "Medium"
+            case .low: "Low"
+            case .auto: "Auto"
+            }
+         }
       }
 
-      /// A text description of the desired image(s). The maximum length is 1000 characters for DALL⋅E 2 and 4000 characters for DALL⋅E 3.
+      /// The background type for the generated image. Supported for GPT-Image 1.
+      public enum Background: String, Encodable, CaseIterable, Identifiable, Hashable, Sendable, CustomStringConvertible {
+         /// Transparent background (requires PNG or WebP format).
+         case transparent
+         /// Opaque background with solid color or content.
+         case opaque
+         /// Automatic background selection by the model.
+         case auto
+
+         public var id: Self { self }
+         public var description: String {
+            switch self {
+            case .transparent: "Transparent"
+            case .opaque: "Opaque"
+            case .auto: "Auto"
+            }
+         }
+      }
+
+      /// A text description of the desired image. Maximum 4000 characters for GPT-Image 1.
       public let prompt: String
 
       /// The model to use for image generation.
       public let model: Model
 
+      /// Optional image data for edit operations (base64 encoded PNG).
+      public let image: String?
+
+      /// Optional mask for edit operations (base64 encoded PNG with transparent areas indicating regions to edit).
+      public let mask: String?
+
       /// Creates a new image generation request.
       /// - Parameters:
-      ///   - prompt: A text description of the desired image(s). Maximum 1000 characters for DALL⋅E 2 and 4000 for DALL⋅E 3.
+      ///   - prompt: A text description of the desired image. Maximum 4000 characters for GPT-Image 1.
       ///   - model: The model to use for image generation with all model-specific parameters embedded.
-      public init(prompt: String, model: Model) {
+      ///   - image: Optional base64 encoded image data for edit operations.
+      ///   - mask: Optional base64 encoded mask for targeted edits.
+      public init(prompt: String, model: Model, image: String? = nil, mask: String? = nil) {
          self.prompt = prompt
          self.model = model
+         self.image = image
+         self.mask = mask
       }
 
       // Custom encoding to handle model-specific parameters
@@ -105,15 +121,20 @@ extension OpenAI {
          try container.encode(self.prompt, forKey: .prompt)
          try container.encode(self.model, forKey: .model)
 
+         // Encode optional image data
+         if let image = image {
+            try container.encode(image, forKey: .image)
+         }
+         if let mask = mask {
+            try container.encode(mask, forKey: .mask)
+         }
+
          // Encode model-specific parameters
          switch self.model {
-         case let .dallE2(size):
-            try container.encode(size, forKey: .size)
-
-         case let .dallE3(size, quality, style):
+         case let .gptImage1(size, quality, background):
             try container.encode(size, forKey: .size)
             try container.encode(quality, forKey: .quality)
-            try container.encode(style, forKey: .style)
+            try container.encode(background, forKey: .background)
          }
       }
 
@@ -122,7 +143,9 @@ extension OpenAI {
          case model
          case size
          case quality
-         case style
+         case background
+         case image
+         case mask
       }
    }
 }

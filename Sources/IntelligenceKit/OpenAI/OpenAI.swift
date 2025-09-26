@@ -133,14 +133,17 @@ public final class OpenAI: Sendable {
       }
    }
 
-   /// Generate images using DALL-E models.
+   /// Generate or edit images using GPT-Image 1 model.
+   /// Automatically selects between generation and edit endpoints based on the request parameters.
    /// - Parameters:
-   ///   - request: Image generation request with prompt, model, quality, and style parameters
-   /// - Returns: Response containing URLs to generated images
+   ///   - request: Image generation or edit request with prompt, model, and optional image/mask data
+   /// - Returns: Response containing URLs to generated or edited images
    /// - Throws: OpenAI.Error for various failure cases
    public func createImage(request: ImageRequest) async throws(OpenAI.Error) -> ImageResponse {
       do {
-         return try await self.restClient.fetchAndDecode(method: .post, path: "v1/images/generations", body: .json(request))
+         // Determine endpoint based on request type
+         let endpoint = request.image != nil ? "v1/images/edits" : "v1/images/generations"
+         return try await self.restClient.fetchAndDecode(method: .post, path: endpoint, body: .json(request))
       } catch {
          throw .requestError(error)
       }
